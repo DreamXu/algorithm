@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+
 void get_nextval(const char *T, int next[])
 {
 	// 求模式串T的next函数值并存入数组 next。
@@ -63,15 +66,50 @@ void get_nextval1(const char *T, int next[])
 	putchar(10);
 }
 
-int main(int argc, const char *argv[])
+int KMP(const char *Text,const char* Pattern)
 {
-	if (argc != 2) {
-		printf("please input a string\n");
+	if (strlen(Text) < strlen(Pattern) || NULL == Text || NULL == Pattern) {
 		return -1;
 	}
 
-	int a[100];
-	get_nextval(argv[1], a);
-	get_nextval1(argv[1], a);
-	return 0;
+	const char *c = Pattern;
+	int len = strlen(Pattern);
+	int * next = (int)malloc(len);
+
+	get_nextval(Pattern, next);
+
+	int index = 0, i = 0, j = 0;
+	while (Text[i] != 0 && Pattern[j] != 0) {
+		if (Text[i] == Pattern[j]) {
+			++i;
+			++j;
+		}
+		else {
+			index += j - next[j];
+			if(next[j] != -1)
+				j = next[j];
+			else {
+				j = 0;
+				++i;
+			}
+		}
+	}
+	
+	free(next);
+
+	if (Pattern[j] == 0)
+		return index;
+	else
+		return -1;
+
+}
+
+int main(int argc, const char *argv[])
+{
+	if (argc != 3) {
+		printf("please input two string\n");
+		return -1;
+	}
+
+	printf("---->>>>>>>>%d\n", KMP(argv[1], argv[2]));
 }
